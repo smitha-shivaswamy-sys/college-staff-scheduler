@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Timetable - College Staff Scheduling</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .logout-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 250px;
+            height: calc(100vh - 70px);
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 20px 0;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            color: #333;
+            text-decoration: none;
+            padding: 15px 20px;
+            font-size: 14px;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            margin-top: 70px;
+            padding: 30px;
+        }
+
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            max-width: 600px;
+        }
+
+        .form-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="time"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .info-box {
+            background-color: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .form-container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>College Staff Scheduling System</h1>
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <span>Welcome, {{ session.username }}</span>
+            <a href="{{ url_for('admin_logout') }}" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <ul class="sidebar-menu">
+            <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('add_staff') }}">Add Staff</a></li>
+            <li><a href="{{ url_for('view_staff') }}">View Staff</a></li>
+            <li><a href="{{ url_for('create_timetable') }}">Create Timetable</a></li>
+            <li><a href="{{ url_for('view_timetable') }}">View Timetable</a></li>
+            <li><a href="{{ url_for('view_leaves') }}">View Leaves</a></li>
+            <li><a href="{{ url_for('view_logins') }}">View Logins</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="form-container">
+            <h2>Edit Timetable Entry</h2>
+
+            <div class="info-box">
+                <strong>Note:</strong> Editing this entry will update the schedule in the system.
+            </div>
+
+            <form method="POST">
+                <div class="form-group">
+                    <label for="day">Day of Week</label>
+                    <select id="day" name="day" required>
+                        <option value="Monday" {% if entry.day == 'Monday' %}selected{% endif %}>Monday</option>
+                        <option value="Tuesday" {% if entry.day == 'Tuesday' %}selected{% endif %}>Tuesday</option>
+                        <option value="Wednesday" {% if entry.day == 'Wednesday' %}selected{% endif %}>Wednesday</option>
+                        <option value="Thursday" {% if entry.day == 'Thursday' %}selected{% endif %}>Thursday</option>
+                        <option value="Friday" {% if entry.day == 'Friday' %}selected{% endif %}>Friday</option>
+                        <option value="Saturday" {% if entry.day == 'Saturday' %}selected{% endif %}>Saturday</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="start_time">Start Time</label>
+                    <input type="time" id="start_time" name="start_time" value="{{ entry.start_time }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="end_time">End Time</label>
+                    <input type="time" id="end_time" name="end_time" value="{{ entry.end_time }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location/Classroom</label>
+                    <input type="text" id="location" name="location" value="{{ entry.location }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="class_name">Class/Subject Name</label>
+                    <input type="text" id="class_name" name="class_name" value="{{ entry.class_name }}" required>
+                </div>
+
+                <button type="submit" class="btn">Update Timetable Entry</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

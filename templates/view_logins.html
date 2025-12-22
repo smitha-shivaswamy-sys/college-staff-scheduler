@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Logins - College Staff Scheduling</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .logout-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 250px;
+            height: calc(100vh - 70px);
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            padding: 20px 0;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            color: #333;
+            text-decoration: none;
+            padding: 15px 20px;
+            font-size: 14px;
+        }
+
+        .sidebar-menu a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            margin-top: 70px;
+            padding: 30px;
+        }
+
+        .content-header {
+            margin-bottom: 30px;
+        }
+
+        .content-header h2 {
+            font-size: 28px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background-color: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        table td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .session-type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .session-staff {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .session-admin {
+            background-color: #cfe2ff;
+            color: #084298;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>College Staff Scheduling System</h1>
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <span>Welcome, {{ session.username }}</span>
+            <a href="{{ url_for('admin_logout') }}" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <ul class="sidebar-menu">
+            <li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('add_staff') }}">Add Staff</a></li>
+            <li><a href="{{ url_for('view_staff') }}">View Staff</a></li>
+            <li><a href="{{ url_for('create_timetable') }}">Create Timetable</a></li>
+            <li><a href="{{ url_for('view_timetable') }}">View Timetable</a></li>
+            <li><a href="{{ url_for('view_leaves') }}">View Leaves</a></li>
+            <li><a href="{{ url_for('view_logins') }}">View Logins</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="content-header">
+            <h2>Login Activity</h2>
+            <p>Real-time monitoring of staff and admin logins</p>
+        </div>
+
+        <div class="table-container">
+            {% if logins %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Staff/Admin Name</th>
+                            <th>Session Type</th>
+                            <th>Login Time</th>
+                            <th>Logout Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for login in logins %}
+                            <tr>
+                                <td>{{ login.name if login.name else 'Admin' }}</td>
+                                <td>
+                                    {% if login.session_type == 'staff' %}
+                                        <span class="session-type-badge session-staff">Staff</span>
+                                    {% else %}
+                                        <span class="session-type-badge session-admin">Admin</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ login.login_time }}</td>
+                                <td>{{ login.logout_time if login.logout_time else 'Active' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div style="padding: 40px; text-align: center; color: #999;">
+                    No login records found
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
